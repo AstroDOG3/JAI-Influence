@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>JAIfluence for Football — Your AI-powered Football Influencer</title>
+  <meta name="description" content="Transform your football social media into a 24/7 AI influencer — News, Interaction, Live Score, and Football Guru in one system." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root{
+      --bg:#0b0b15;
+      --purple:#6e4cff;
+      --blue:#00c3ff;
+      --teal:#24ffe0;
+      --text:#e7e9ee;
+      --muted:#aab0c0;
+      --card:#121225;
+      --line:#22243c;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+      --grad: radial-gradient(1200px 1200px at 10% 10%, rgba(110,76,255,.35), transparent 60%),
+              radial-gradient(1200px 1200px at 90% 30%, rgba(0,195,255,.30), transparent 60%),
+              radial-gradient(1200px 1000px at 30% 90%, rgba(36,255,224,.18), transparent 60%);
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji";line-height:1.6}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+
+    /* ====== Global background w/ animated gradient ====== */
+    .page-bg{
+      position:fixed;inset:0;z-index:-1;
+      background:
+        linear-gradient(180deg, #0b0b15 0%, #0b0f2a 100%);
+      overflow:hidden;
+    }
+    .page-bg::after{
+      content:"";
+      position:absolute;inset:-10%;
+      background:var(--grad);
+      filter: blur(40px) saturate(120%);
+      animation: floatGlow 16s ease-in-out infinite alternate;
+      opacity:.9;
+    }
+    @keyframes floatGlow{
+      0%  { transform:translate3d(-2%, -2%, 0) scale(1.0) rotate(0.2deg); }
+      100%{ transform:translate3d(2%, 1.5%, 0) scale(1.05) rotate(-0.2deg);}
+    }
+    @media (prefers-reduced-motion: reduce){
+      .page-bg::after{animation:none}
+      .reveal{transition:none!important}
+    }
+
+    /* ====== Layout ====== */
+    .container{width:min(1200px, 92vw);margin:0 auto}
+    header{
+      position:sticky;top:0;z-index:50;
+      backdrop-filter: blur(12px);
+      background:linear-gradient(180deg, rgba(11,11,21,.75), rgba(11,11,21,.35));
+      border-bottom:1px solid var(--line);
+    }
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0;}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.3px}
+    .brand__logo{
+      width:34px;height:34px;border-radius:9px;
+      background:linear-gradient(135deg, var(--purple), var(--blue));
+      box-shadow:0 8px 24px rgba(110,76,255,.35), inset 0 0 28px rgba(0,195,255,.25);
+    }
+    .nav__links{display:flex;gap:22px;font-weight:600}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:12px 18px;border-radius:12px;border:1px solid transparent;
+      font-weight:700;letter-spacing:.2px;cursor:pointer;transition:.2s ease;
+    }
+    .btn--primary{
+      background:linear-gradient(135deg, var(--purple), var(--blue));
+      color:white; box-shadow:0 12px 30px rgba(110,76,255,.35);
+    }
+    .btn--primary:hover{transform:translateY(-1px);filter:brightness(1.05)}
+    .btn--ghost{border-color:#2a2d47;background:rgba(16,17,35,.6)}
+    .btn--ghost:hover{background:rgba(16,17,35,.85)}
+    .nav__cta{display:flex;gap:10px}
+
+    /* ====== Hero ====== */
+    .hero{padding:86px 0 36px;position:relative}
+    .hero__wrap{display:grid;grid-template-columns: 1.1fr .9fr;gap:32px;align-items:center}
+    .eyebrow{
+      display:inline-flex;gap:8px;align-items:center;
+      color:#BFD7FF;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.18em;
+      padding:8px 12px;border-radius:999px;background:rgba(0,195,255,.08);border:1px solid rgba(0,195,255,.25)
+    }
+    .hero h1{font-size:48px;line-height:1.1;margin:14px 0 10px}
+    .hero h1 .grad{
+      background:linear-gradient(90deg, #a9a4ff, #7abfff, #23ffe2);
+      -webkit-background-clip:text;background-clip:text;color:transparent
+    }
+    .hero p{color:var(--muted);font-size:18px;margin:10px 0 24px}
+    .hero__cards{
+      display:grid;gap:12px;grid-template-columns:repeat(2, 1fr);
+    }
+    .metric{
+      background:linear-gradient(180deg, rgba(14,15,36,.86), rgba(14,15,36,.6));
+      border:1px solid var(--line);border-radius:var(--radius);padding:16px 14px;
+      box-shadow:var(--shadow);min-height:92px;position:relative;overflow:hidden
+    }
+    .metric__k{font-size:28px;font-weight:800}
+    .metric__k small{opacity:.8;font-size:14px;font-weight:700;margin-left:6px}
+    .metric__sub{font-size:12px;color:var(--muted)}
+    .metric::after{
+      content:"";position:absolute;inset:-40%;background:
+        radial-gradient(400px 260px at 90% 10%, rgba(110,76,255,.25), transparent 40%),
+        radial-gradient(380px 240px at 10% 90%, rgba(0,195,255,.22), transparent 45%);
+      filter: blur(18px);
+    }
+    .mock{
+      aspect-ratio: 16/10;background:linear-gradient(180deg,#131433, #0d0e2b);
+      border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.03);
+      position:relative;overflow:hidden
+    }
+    .mock__hud{
+      position:absolute;inset:0;padding:16px;display:grid;gap:14px;grid-template-rows:auto 1fr auto;color:#cfe7ff
+    }
+    .hud__bar{display:flex;gap:8px}
+    .hud__dot{width:8px;height:8px;border-radius:999px;background:#2e3158;border:1px solid #3f4376}
+    .timeline{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+    .timeline .pill{
+      border:1px dashed #2c3165;border-radius:10px;padding:10px;font-size:12px;background:rgba(29,33,72,.5)
+    }
+    .mock__ticker{
+      display:flex;gap:12px;overflow:auto;scrollbar-width:none
+    }
+    .tag{font-size:12px;border:1px solid #2c3165;border-radius:999px;padding:6px 10px;background:rgba(18,22,54,.6)}
+    .glow-line{
+      position:absolute;left:-15%;right:-15%;top:50%;height:2px;background:linear-gradient(90deg, transparent, rgba(110,76,255,.6), rgba(0,195,255,.6), transparent);
+      filter:blur(1px);opacity:.6
+    }
+
+    /* ====== Section Head ====== */
+    .section{padding:76px 0;border-top:1px solid var(--line)}
+    .section__head{display:flex;align-items:end;justify-content:space-between;margin-bottom:22px;gap:16px}
+    .section__head h2{font-size:30px;margin:0}
+    .section__sub{color:var(--muted)}
+
+    /* ====== Feature Grid ====== */
+    .grid{display:grid;gap:18px}
+    .grid--2{grid-template-columns:repeat(2,1fr)}
+    .grid--3{grid-template-columns:repeat(3,1fr)}
+    @media (max-width:980px){
+      .hero__wrap{grid-template-columns:1fr}
+      .grid--2,.grid--3{grid-template-columns:1fr}
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(14,15,36,.86), rgba(14,15,36,.6));
+      border:1px solid var(--line);
+      border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);position:relative;overflow:hidden
+    }
+    .card h3{margin:0 0 6px}
+    .card p{color:var(--muted)}
+    .chip{display:inline-flex;gap:8px;align-items:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;padding:6px 10px;border-radius:999px;background:rgba(110,76,255,.12);border:1px solid rgba(110,76,255,.35);margin-bottom:8px}
+
+    /* Small list */
+    .list{display:grid;gap:8px;margin-top:8px}
+    .li{display:flex;gap:10px;align-items:flex-start}
+    .li b{font-weight:700}
+    .dot{
+      margin-top:6px;width:8px;height:8px;border-radius:50%;
+      background:linear-gradient(135deg,var(--purple),var(--blue));box-shadow:0 0 0 3px rgba(110,76,255,.15)
+    }
+
+    /* ====== Ecosystem Diagram ====== */
+    .loop{
+      display:grid;gap:18px;
+      grid-template-columns:1.1fr .9fr;align-items:center
+    }
+    .loop__canvas{
+      background:linear-gradient(180deg,#0f1131,#0d1231);
+      border:1px solid var(--line);border-radius:20px;padding:22px;position:relative;overflow:hidden
+    }
+    .loop__node{
+      position:absolute;display:flex;align-items:center;gap:10px;
+      background:rgba(22,26,58,.75);border:1px solid #2c3165;border-radius:12px;padding:8px 10px;font-weight:700
+    }
+    .loop__node small{display:block;color:#9fb8ff;font-weight:700}
+    .loop__node .badge{font-size:10px;color:#77f8ff}
+
+    .loop__node--news{left:6%;top:14%}
+    .loop__node--live{right:6%;top:14%}
+    .loop__node--interact{left:6%;bottom:14%}
+    .loop__node--guru{right:6%;bottom:14%}
+    .loop__ring{
+      position:absolute;inset:10%;
+      border-radius:999px;border:1px dashed #2c3165;filter:drop-shadow(0 0 20px rgba(0,195,255,.25));
+      animation: spin 28s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ====== Value Cards ====== */
+    .value{display:grid;gap:18px;grid-template-columns:repeat(4,1fr)}
+    @media (max-width:980px){.value{grid-template-columns:1fr}}
+
+    .value .card{min-height:160px}
+    .value .card h4{margin:0 0 6px}
+    .value .card p{font-size:14px}
+
+    /* ====== Reviews ====== */
+    .reviews{position:relative}
+    .reviews__track{
+      display:flex;gap:18px;overflow:hidden;scroll-behavior:smooth
+    }
+    .review{
+      min-width:320px;flex:0 0 320px;
+      background:linear-gradient(180deg, rgba(14,15,36,.86), rgba(14,15,36,.6));
+      border:1px solid var(--line);border-radius:18px;padding:18px;position:relative
+    }
+    .review__head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .avatar{
+      width:36px;height:36px;border-radius:50%;
+      background:linear-gradient(135deg, var(--purple), var(--blue));
+      box-shadow:inset 0 0 18px rgba(255,255,255,.08)
+    }
+    .stars{display:flex;gap:2px;font-size:14px;color:#ffd66b}
+    .review p{color:#cfd5ee}
+    .carousel__ctrl{
+      display:flex;gap:10px;position:absolute;right:0;top:-52px
+    }
+    .ctrl{
+      width:36px;height:36px;border-radius:10px;border:1px solid #2c3165;background:#121535;cursor:pointer;display:grid;place-items:center;font-weight:900
+    }
+    .ctrl:hover{filter:brightness(1.2)}
+
+    /* ====== CTA ====== */
+    .cta{
+      text-align:center;padding:72px 0;background:
+        radial-gradient(500px 400px at 20% 10%, rgba(110,76,255,.2), transparent 60%),
+        radial-gradient(500px 400px at 80% 90%, rgba(0,195,255,.18), transparent 60%);
+      border-top:1px solid var(--line)
+    }
+    .cta h2{font-size:34px;margin:0 0 10px}
+    .cta p{color:var(--muted);margin:0 0 20px}
+    .cta .btn{padding:14px 22px;font-size:16px}
+    .cta .btn + .btn{margin-left:10px}
+
+    /* ====== Footer ====== */
+    footer{border-top:1px solid var(--line);padding:22px 0;color:#93a0c7}
+    .foot{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px}
+    .foot a{opacity:.9}
+    .foot a:hover{opacity:1}
+
+    /* ====== Reveal on scroll ====== */
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease, transform .6s ease}
+    .reveal.is-visible{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+  <div class="page-bg" aria-hidden="true"></div>
+
+  <!-- ====== Header ====== -->
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="brand__logo" aria-hidden="true"></div>
+        <div>JAIfluence <span style="opacity:.65;font-weight:600">for Football</span></div>
+      </div>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#ecosystem">Ecosystem</a>
+        <a href="#value">Benefits</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#demo">Demo</a>
+      </nav>
+      <div class="nav__cta">
+        <a class="btn btn--ghost" href="#contact">Talk to Sales</a>
+        <a class="btn btn--primary" href="#demo">Try Demo</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====== Hero ====== -->
+  <section class="hero">
+    <div class="container hero__wrap">
+      <div class="reveal">
+        <span class="eyebrow">AI SPORTS INFLUENCER</span>
+        <h1>Transform your football social media into a <span class="grad">24/7 AI influencer</span>.</h1>
+        <p>From breaking news to live goals and tactical insights — JAIfluence updates, talks, and reacts like a real football guru, in your brand’s voice.</p>
+        <div style="display:flex;gap:10px;margin-bottom:18px">
+          <a class="btn btn--primary" href="#demo" data-cta="primary">Get Started — It’s Live ⚡</a>
+          <a class="btn btn--ghost" href="#features">Explore Features</a>
+        </div>
+
+        <div class="hero__cards">
+          <div class="metric">
+            <div class="metric__k">24/7<small>Autopilot</small></div>
+            <div class="metric__sub">Always-on posting & replies — never miss a moment</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">+68%<small>Engagement</small></div>
+            <div class="metric__sub">Real-time replies build loyal communities</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">x100<small>Scale</small></div>
+            <div class="metric__sub">Run one page or a hundred — each with its own persona</div>
+          </div>
+          <div class="metric">
+            <div class="metric__k">On-Brand</div>
+            <div class="metric__sub">JAIfluence learns your tone, values, and knowledge</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mock HUD -->
+      <div class="mock reveal" aria-hidden="true">
+        <div class="mock__hud">
+          <div class="hud__bar">
+            <div class="hud__dot"></div><div class="hud__dot"></div><div class="hud__dot"></div>
+          </div>
+          <div class="timeline">
+            <div class="pill">News: “Der Klassiker tonight”</div>
+            <div class="pill">Reminder: 01:45 Kickoff</div>
+            <div class="pill">Live: GOAL! 1-0 73’</div>
+            <div class="pill">Reply: “What a finish!”</div>
+            <div class="pill">Guru: xG 2.1 vs 1.2</div>
+            <div class="pill">FT Recap: 2-1</div>
+          </div>
+          <div class="mock__ticker">
+            <span class="tag">#EPL</span>
+            <span class="tag">#UCL</span>
+            <span class="tag">#LaLiga</span>
+            <span class="tag">#SerieA</span>
+            <span class="tag">#Bundesliga</span>
+            <span class="tag">#JAIfluence</span>
+            <span class="tag">#LiveScore</span>
+          </div>
+        </div>
+        <div class="glow-line"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Features ====== -->
+  <section id="features" class="section">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="reveal">4-Core Engine — The Business Feature Framework</h2>
+        <p class="section__sub reveal">AI + Live Data + Persona + Engagement in one system.</p>
+      </div>
+
+      <div class="grid grid--2">
+        <article class="card reveal">
+          <div class="chip">1 · News Update</div>
+          <h3>Stay Fresh. Stay Relevant.</h3>
+          <p>Auto-generate football news from trusted sources and push tweet-style updates & match reminders to keep your feed alive.</p>
+          <div class="list">
+            <div class="li"><span class="dot"></span><div><b>Auto News</b> from reliable outlets</div></div>
+            <div class="li"><span class="dot"></span><div><b>Match Reminders</b> before kickoff</div></div>
+            <div class="li"><span class="dot"></span><div><b>Persona Tone</b> witty / analytic / fan voice</div></div>
+          </div>
+        </article>
+
+        <article class="card reveal">
+          <div class="chip">2 · Interaction</div>
+          <h3>Talk Like a Real Fan.</h3>
+          <p>JAIfluence replies to comments & DMs instantly with football-aware context, protected by AI guardrails.</p>
+          <div class="list">
+            <div class="li"><span class="dot"></span><div><b>Instant Replies</b> 24/7 across posts</div></div>
+            <div class="li"><span class="dot"></span><div><b>Safety Guardrails</b> to filter toxic/off-brand content</div></div>
+            <div class="li"><span class="dot"></span><div><b>Tone Matching</b> consistent with your brand voice</div></div>
+          </div>
+        </article>
+
+        <article class="card reveal">
+          <div class="chip">3 · Live Score (Real-time)</div>
+          <h3>Never Miss a Goal.</h3>
+          <p>Real-time match updates and auto reactions during peak fan excitement to maximize engagement.</p>
+          <div class="list">
+            <div class="li"><span class="dot"></span><div><b>Live Feed</b> goal/HT/FT posts</div></div>
+            <div class="li"><span class="dot"></span><div><b>Auto Reactions</b> “GOAL!! 73’ Salah”</div></div>
+            <div class="li"><span class="dot"></span><div><b>Stat Snippets</b> shots, xG, possession</div></div>
+          </div>
+        </article>
+
+        <article class="card reveal">
+          <div class="chip">4 · Football Guru</div>
+          <h3>Analyze. Predict. Inspire.</h3>
+          <p>Post-match tactical breakdowns and predictive insights based on league statistics — sound like a real expert.</p>
+          <div class="list">
+            <div class="li"><span class="dot"></span><div><b>Post-Match Review</b> tactical & player ratings</div></div>
+            <div class="li"><span class="dot"></span><div><b>Prediction Engine</b> powered by historical stats</div></div>
+            <div class="li"><span class="dot"></span><div><b>Content Templates</b> ready-to-post analysis</div></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Ecosystem Loop ====== -->
+  <section id="ecosystem" class="section">
+    <div class="container loop">
+      <div class="loop__canvas reveal" aria-hidden="true">
+        <div class="loop__ring"></div>
+        <div class="loop__node loop__node--news">📰 News Update <small class="badge">Create</small></div>
+        <div class="loop__node loop__node--live">⏱ Live Score <small class="badge">React</small></div>
+        <div class="loop__node loop__node--interact">💬 Interaction <small class="badge">Engage</small></div>
+        <div class="loop__node loop__node--guru">🧠 Football Guru <small class="badge">Analyze</small></div>
+      </div>
+      <div class="reveal">
+        <div class="chip">How It Works</div>
+        <h3>The AI that thinks, talks, and reacts like a real fan.</h3>
+        <p class="section__sub">Each module powers the next: <b>News → Live → Interaction → Guru → News</b>. This infinite loop compounds your reach and retention.</p>
+        <div class="list">
+          <div class="li"><span class="dot"></span><div><b>Always-on Flywheel</b> for sustainable growth</div></div>
+          <div class="li"><span class="dot"></span><div><b>Human-like Persona</b> to build trust & loyalty</div></div>
+          <div class="li"><span class="dot"></span><div><b>Data-aware Content</b> grounded in live stats & trends</div></div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <a class="btn btn--primary" href="#demo">See It in Action</a>
+          <a class="btn btn--ghost" href="#value">Why Teams Choose Us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Business Value ====== -->
+  <section id="value" class="section">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="reveal">Business Impact — Why Brands Choose JAIfluence</h2>
+        <p class="section__sub reveal">Economic, operational, and emotional value in one platform.</p>
+      </div>
+
+      <div class="value">
+        <div class="card reveal">
+          <h4>🕒 Save Time & Money</h4>
+          <p>Replace manual posting & ghostwriting with smart automation. Achieve consistency without hiring extra shifts.</p>
+        </div>
+        <div class="card reveal">
+          <h4>💬 Boost Engagement</h4>
+          <p>Real-time replies make fans feel heard. Expect higher comments, DMs, and return visits.</p>
+        </div>
+        <div class="card reveal">
+          <h4>🚀 Scale with Ease</h4>
+          <p>Manage 1 or 100 pages — each with its own personality and workflow, all powered by JAIfluence.</p>
+        </div>
+        <div class="card reveal">
+          <h4>🧩 Stay On Brand</h4>
+          <p>Unlike generic AI, JAIfluence learns your tone, values, and knowledge so every interaction feels authentic.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Reviews / Testimonials ====== -->
+  <section id="reviews" class="section reviews">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="reveal">What Teams Are Saying</h2>
+        <div class="carousel__ctrl">
+          <button class="ctrl" aria-label="Previous" data-prev>&larr;</button>
+          <button class="ctrl" aria-label="Next" data-next>&rarr;</button>
+        </div>
+      </div>
+
+      <div class="reviews__track" data-track>
+        <article class="review reveal" aria-label="Review from Premier Fan Page">
+          <div class="review__head">
+            <div class="avatar" aria-hidden="true"></div>
+            <div>
+              <b>@PremierFanHub</b><div class="stars">★★★★★</div>
+            </div>
+          </div>
+          <p>“Live-score reactions are insane. We saw +92% comments during matches — and our admins actually slept.”</p>
+        </article>
+
+        <article class="review reveal" aria-label="Review from Agency Lead">
+          <div class="review__head">
+            <div class="avatar" aria-hidden="true"></div>
+            <div>
+              <b>Nova Sports Agency</b><div class="stars">★★★★★</div>
+            </div>
+          </div>
+          <p>“We scaled from 8 to 60 club pages without hiring. Tone control per team is spot on.”</p>
+        </article>
+
+        <article class="review reveal" aria-label="Review from Club Media">
+          <div class="review__head">
+            <div class="avatar" aria-hidden="true"></div>
+            <div>
+              <b>Eastern United FC</b><div class="stars">★★★★★</div>
+            </div>
+          </div>
+          <p>“The Guru module turned our post-match into mini shows. Sponsors loved the analytical angle.”</p>
+        </article>
+
+        <article class="review reveal" aria-label="Review from Creator">
+          <div class="review__head">
+            <div class="avatar" aria-hidden="true"></div>
+            <div>
+              <b>@FootyTactician</b><div class="stars">★★★★☆</div>
+            </div>
+          </div>
+          <p>“Feels like having a co-host that never gets tired. My audience now expects daily insights.”</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Demo / Conversion ====== -->
+  <section id="demo" class="cta">
+    <div class="container">
+      <h2 class="reveal">Ready to Make Your Page Come Alive?</h2>
+      <p class="reveal">Launch your AI football influencer in minutes — keep your fans engaged 24/7.</p>
+      <div class="reveal">
+        <a class="btn btn--primary" href="#contact" data-cta="primary">Start Free Trial</a>
+        <a class="btn btn--ghost" href="#contact">Talk to Sales</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Contact (simple) ====== -->
+  <section id="contact" class="section">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="reveal">Let’s talk</h2>
+        <p class="section__sub reveal">Tell us about your pages and goals. We’ll tailor a demo to your needs.</p>
+      </div>
+
+      <div class="grid grid--2">
+        <form class="card reveal" onsubmit="event.preventDefault();alert('Thanks! Our team will reach out shortly.');">
+          <label>ชื่อ / บริษัท<br/>
+            <input required name="name" placeholder="ชื่อ-สกุล / ชื่อบริษัท" style="margin-top:6px;width:100%;padding:12px;border-radius:10px;border:1px solid #2a2d47;background:#0f1131;color:#eaf0ff"/>
+          </label>
+          <div style="height:10px"></div>
+          <label>อีเมล<br/>
+            <input required type="email" name="email" placeholder="you@company.com" style="margin-top:6px;width:100%;padding:12px;border-radius:10px;border:1px solid #2a2d47;background:#0f1131;color:#eaf0ff"/>
+          </label>
+          <div style="height:10px"></div>
+          <label>จำนวนเพจที่ต้องการเชื่อม<br/>
+            <input name="pages" placeholder="เช่น 1, 10, 100" style="margin-top:6px;width:100%;padding:12px;border-radius:10px;border:1px solid #2a2d47;background:#0f1131;color:#eaf0ff"/>
+          </label>
+          <div style="height:10px"></div>
+          <label>ข้อความเพิ่มเติม<br/>
+            <textarea name="msg" rows="4" placeholder="เล่าโจทย์ของคุณ" style="margin-top:6px;width:100%;padding:12px;border-radius:10px;border:1px solid #2a2d47;background:#0f1131;color:#eaf0ff"></textarea>
+          </label>
+          <div style="height:14px"></div>
+          <button class="btn btn--primary" type="submit">Send Request</button>
+        </form>
+
+        <div class="card reveal">
+          <h3>Why a tailored demo?</h3>
+          <p class="section__sub">Every team is different. We’ll show you how the 4-Core Engine fits your content ops, data sources, and brand persona.</p>
+          <div class="list">
+            <div class="li"><span class="dot"></span><div><b>Persona Setup</b> — define your tone & guardrails</div></div>
+            <div class="li"><span class="dot"></span><div><b>Data & Live Feeds</b> — connect leagues and schedules</div></div>
+            <div class="li"><span class="dot"></span><div><b>Workflow</b> — approvals, auto-post, reply rules</div></div>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn btn--ghost" href="#features">See Features</a>
+            <a class="btn btn--primary" href="#demo">Start Free Trial</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Footer ====== -->
+  <footer>
+    <div class="container foot">
+      <div>© 2025 JAIfluence Inc.</div>
+      <div style="display:flex;gap:16px">
+        <a href="#features">Features</a>
+        <a href="#value">Benefits</a>
+        <a href="#contact">Contact</a>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ===== Smooth-scroll for in-page anchors =====
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        const id = a.getAttribute('href');
+        if(id.length > 1){
+          const el = document.querySelector(id);
+          if(el){
+            e.preventDefault();
+            el.scrollIntoView({behavior:'smooth', block:'start'});
+          }
+        }
+      })
+    });
+
+    // ===== CTA micro-interaction (analytics stub + ripple) =====
+    document.querySelectorAll('[data-cta="primary"]').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        // Fake analytics: replace with real event
+        console.log('CTA Clicked:', e.currentTarget.textContent.trim());
+        // Ripple
+        const r = document.createElement('span');
+        const rect = btn.getBoundingClientRect();
+        r.style.position='absolute';
+        r.style.inset='0';
+        r.style.pointerEvents='none';
+        r.style.borderRadius='inherit';
+        r.style.background='radial-gradient(160px 160px at '+(e.clientX-rect.left)+'px '+(e.clientY-rect.top)+'px, rgba(255,255,255,.25), transparent 60%)';
+        btn.style.position='relative';
+        btn.appendChild(r);
+        setTimeout(()=>r.remove(), 350);
+      });
+    });
+
+    // ===== Reveal on scroll (IntersectionObserver) =====
+    const revealEls = document.querySelectorAll('.reveal');
+    const onReveal = entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    };
+    const observer = new IntersectionObserver(onReveal, {threshold: .12});
+    revealEls.forEach(el=>observer.observe(el));
+
+    // ===== Reviews carousel (auto + manual) =====
+    const track = document.querySelector('[data-track]');
+    const prev = document.querySelector('[data-prev]');
+    const next = document.querySelector('[data-next]');
+    let autoScrollId = null;
+
+    function scrollByCard(dir=1){
+      const card = track.querySelector('.review');
+      if(!card) return;
+      const w = card.getBoundingClientRect().width + 18; // include gap
+      track.scrollBy({left: dir*w, behavior:'smooth'});
+    }
+    prev.addEventListener('click', ()=>scrollByCard(-1));
+    next.addEventListener('click', ()=>scrollByCard(1));
+
+    function startAuto(){
+      stopAuto();
+      autoScrollId = setInterval(()=>scrollByCard(1), 3200);
+    }
+    function stopAuto(){
+      if(autoScrollId) clearInterval(autoScrollId);
+      autoScrollId = null;
+    }
+    startAuto();
+    track.addEventListener('pointerenter', stopAuto);
+    track.addEventListener('pointerleave', startAuto);
+
+    // ===== Respect reduced motion =====
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      stopAuto();
+    }
+  </script>
+</body>
+</html>
